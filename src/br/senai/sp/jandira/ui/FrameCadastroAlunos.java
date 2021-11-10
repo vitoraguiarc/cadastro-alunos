@@ -2,6 +2,8 @@ package br.senai.sp.jandira.ui;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -13,7 +15,11 @@ import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JList;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
+
+import br.senai.sp.jandira.model.Aluno;
 import br.senai.sp.jandira.model.Periodo;
+import br.senai.sp.jandira.repository.AlunoRepository;
 
 public class FrameCadastroAlunos extends JFrame {
 
@@ -22,6 +28,9 @@ public class FrameCadastroAlunos extends JFrame {
 	private JTextField txtNome;
 	private JTextField textFieldM;
 	private JTextField textFieldN;
+	private int posicao;
+
+
 
 	public FrameCadastroAlunos() {
 		setTitle("Cadastro Alunos");
@@ -55,7 +64,15 @@ public class FrameCadastroAlunos extends JFrame {
 		contentPane.add(lblPeriodo);
 		
 		JComboBox comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(Periodo.values()));
+		DefaultComboBoxModel <String> comboModelPeriodo = new DefaultComboBoxModel <String> ();
+		
+		// Carregar o comboModel com as descrições dos Perídos
+		for (Periodo descricao : Periodo.values() ) {
+			comboModelPeriodo.addElement(descricao.getDescricao());		
+			}
+
+		
+		comboBox.setModel(comboModelPeriodo);
 		comboBox.setBounds(117, 128, 130, 22);
 		contentPane.add(comboBox);
 		
@@ -71,9 +88,38 @@ public class FrameCadastroAlunos extends JFrame {
 		scrollPane_1.setBounds(310, 72, 98, 157);
 		contentPane.add(scrollPane_1);
 		
-		JList list = new JList();
-		scrollPane_1.setViewportView(list);
+		JList listAlunos = new JList();
+		scrollPane_1.setViewportView(listAlunos);
 		
+		DefaultListModel <String> modelAlunos = new DefaultListModel();
+		listAlunos.setModel(modelAlunos);
+		
+		JButton btnSalvar = new JButton("Salvar Aluno");
+		btnSalvar.setBounds(35, 183, 180, 46);
+		contentPane.add(btnSalvar);
+		
+		AlunoRepository turma = new AlunoRepository(3);
+	
+		
+		btnSalvar.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				Aluno aluno = new Aluno();
+				aluno.setNome(textFieldN.getText());
+				aluno.setMatricula(textFieldM.getText());
+				
+				turma.gravar(aluno, posicao);
+				
+				posicao++;
+				
+				modelAlunos.addElement(aluno.getNome());
+			
+			
+				
+			}
+		});
 		
 	}
 }
